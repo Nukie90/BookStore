@@ -136,9 +136,52 @@ func RestrictedArea(c *fiber.Ctx) error {
 }
 
 func BrowseBooks(c *fiber.Ctx, db *gorm.DB) error {
-	var books []model.Book
-
-	db.Find(&books)
-
-	return c.JSON(books)
+	how := c.Params("how")
+	switch how {
+	case "all":
+		var books []model.Book
+		if err := db.Find(&books).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+		return c.JSON(books)
+	case "available":
+		var books []model.Book
+		if err := db.Where("quantity > 0").Find(&books).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+		return c.JSON(books)
+	case "by_price":
+		var books []model.Book
+		if err := db.Order("price desc").Find(&books).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+		return c.JSON(books)
+	case "by_author":
+		var books []model.Book
+		if err := db.Order("author").Find(&books).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+		return c.JSON(books)
+	case "by_title":
+		var books []model.Book
+		if err := db.Order("title").Find(&books).Error; err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+		return c.JSON(books)
+	default:
+		return c.Status(400).JSON(fiber.Map{
+			"error":   "Invalid input",
+			"message": "Invalid input",
+		})
+	}
 }

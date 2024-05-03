@@ -37,7 +37,7 @@ func SetupRoutes(app *fiber.App, db *gorm.DB) {
         return handler.Logout(c)
     })
 
-    app.Get("/browse", func(c *fiber.Ctx) error {
+    app.Get("/browse/:how", func(c *fiber.Ctx) error {
         return handler.BrowseBooks(c, db)
     })
 }
