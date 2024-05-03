@@ -12,10 +12,10 @@ func SetupRoutes(app *fiber.App, db *gorm.DB) {
     app.Get("/", func(c *fiber.Ctx) error {
         return c.SendString("Hello, World!")
     }) 
-    // //user
+    //user
     routes.UserRoutes(app, db)
-    // //task
-    // routes.TaskRoutes(app, db)
+    //owner
+    routes.OwnerRoutes(app, db)
 
     app.Get("/", func(c *fiber.Ctx) error {
         return c.SendString("Hello, World!")
@@ -35,5 +35,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB) {
 
     app.Get("/logout", func(c *fiber.Ctx) error {
         return handler.Logout(c)
+    })
+
+    app.Get("/browse", func(c *fiber.Ctx) error {
+        return handler.BrowseBooks(c, db)
     })
 }
