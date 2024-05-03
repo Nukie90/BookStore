@@ -46,6 +46,40 @@ func GetUsers(c *fiber.Ctx, db *gorm.DB) error {
 	return c.JSON(users)
 }
 
+func GetUser(c *fiber.Ctx, db *gorm.DB) error {
+	cookie := c.Cookies("jwt")
+	token, err := jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
+		return []byte("secret"), nil
+	})
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "Could not parse claims",
+		})
+	}
+
+	username, ok := claims["username"].(string)
+	if !ok {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "Username not found in claims",
+		})
+	}
+
+	var user model.User
+	if err := db.Where("username = ?", username).First(&user).Error; err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"message": "User not found",
+		})
+	}
+
+	return c.JSON(user)
+}
+
 func Login(c *fiber.Ctx, db *gorm.DB) error {
 	user := new(model.User)
 	if err := c.BodyParser(&user); err != nil {
@@ -93,7 +127,6 @@ func Login(c *fiber.Ctx, db *gorm.DB) error {
 		"token": signedToken,
 		"user_type": existingUser.UserType,
 	})
-
 }
 
 func Logout(c *fiber.Ctx) error {
