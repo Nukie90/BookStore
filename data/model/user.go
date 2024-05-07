@@ -25,8 +25,10 @@ type User struct {
 }
 
 type ShoppingCart struct {
-	CartNo int `gorm:"primaryKey" json:"cart_no"`
-	UserID uuid.UUID `gorm:"type:uuid;not null" json:"user_id"`
-	BookID uuid.UUID `gorm:"type:uuid;not null" json:"book_id"`
-	Amount int       `gorm:"type:integer;not null" json:"amount" validate:"required, min=1"`
+	Model
+	UserID uuid.UUID `gorm:"type:uuid;not null" json:"user_id" validate:"required"`
+	BookID uuid.UUID `gorm:"type:uuid;not null" json:"book_id" validate:"required"`
+	Title string `gorm:"type:varchar(100);not null" json:"title" validate:"required"`
+	Quantity int `gorm:"type:int;not null" json:"quantity" validate:"required"`
+	Cost float64 `gorm:"type:float;not null" json:"cost" validate:"required"`
 }

@@ -22,8 +22,8 @@ func UserRoutes(app *fiber.App, db *gorm.DB) {
         return handler.GetUsers(c, db)
     })
 
-    // //get current user profile
-    // user.Get("/profile", func(c *fiber.Ctx) error {
-    //     return handler.GetUser(c, db)
-    // })
+    //get current user profile
+    user.Get("/profile", func(c *fiber.Ctx) error {
+        return handler.GetUser(c, db)
+    })
 }

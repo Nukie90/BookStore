@@ -30,6 +30,8 @@ func main() {
 
 	db.AutoMigrate(&model.Book{})
 
+	db.AutoMigrate(&model.SoldRecord{})
+
 	app := fiber.New()
 
 	api.SetupRoutes(app, db)
