@@ -41,6 +41,6 @@ func main() {
 	if portNum == "" {
 		log.Fatal("$PORT must be set")
 	}
+	fmt.Println("Server is running on port: " + portNum)
 	app.Listen(":" + portNum)
-	fmt.Println("Server is running on port", portNum)
 }

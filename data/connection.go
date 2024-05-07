@@ -4,13 +4,16 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func DbConnection() (*gorm.DB, error) {
-	des := "postgres://nukie:Gamersking0@localhost:5432/bookdata?sslmode=disable"
+	// des := "postgres://postgres:Gamersking0@localhost:5432/bookstore?sslmode=disable"
+	//docker postgres
+	des := os.Getenv("DATABASE_URL")
 	sqlDB, err := sql.Open("pgx", des)
 	if err != nil {
 		return nil, errors.New("failed to connect database #1")
