@@ -16,6 +16,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB) {
     routes.UserRoutes(app, db)
     //owner
     routes.OwnerRoutes(app, db)
+    //customer
+    routes.CustomerRoutes(app, db)
 
     app.Get("/", func(c *fiber.Ctx) error {
         return c.SendString("Hello, World!")

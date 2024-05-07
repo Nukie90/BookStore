@@ -7,7 +7,7 @@ import (
 
 type SoldRecord struct {
 	Model
-	BookID uuid.UUID `gorm:"type:uuid;not null" json:"book_id"`
-	Amount int       `gorm:"type:integer;not null" json:"amount" validate:"required, min=1"`
-	TotalPrice float64 `gorm:"type:float;not null" json:"total_price" validate:"required, min=1"`
+	BuyerID uuid.UUID `gorm:"type:uuid;not null" json:"buyer_id"`
+	BookList []Book `gorm:"many2many:sold_record_books;" json:"book_list"`
+	TotalPrice float64 `gorm:"type:numeric(10,2);not null" json:"total_price"`
 }

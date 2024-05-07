@@ -18,4 +18,9 @@ func OwnerRoutes(app *fiber.App, db *gorm.DB) {
 		fmt.Println("addbook")
 		return handler.AddBook(c, db)
 	})
+
+	owner.Get("/soldrecord/:how", func(c *fiber.Ctx) error {
+		fmt.Println("getbooks")
+		return handler.CheckSoldRecord(c, db)
+	})
 }

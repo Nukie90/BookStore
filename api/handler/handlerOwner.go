@@ -57,3 +57,37 @@ func AddBook(c *fiber.Ctx, db *gorm.DB) error {
     return c.JSON(book)
 
 }
+
+func CheckSoldRecord(c *fiber.Ctx, db *gorm.DB) error {
+	cookie := c.Cookies("jwt")
+	token, err := jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
+		return []byte("secret"), nil
+	})
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+	if claims["user_type"] != "Owner" {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "Unauthorized",
+		})
+	}
+
+	how := c.Params("how")
+	if how == "all" {
+		books := []model.Book{}
+		db.Find(&books)
+		return c.JSON(books)
+	} else if how == "sold" {
+		books := []model.Book{}
+		db.Where("stock = ?", 0).Find(&books)
+		return c.JSON(books)
+	} else {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "Invalid parameter",
+		})
+	}
+}
