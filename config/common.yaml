@@ -1,0 +1,18 @@
+app:
+  env: "development"
+  port: 8080
+  host: "localhost"
+
+# The connection details for the PostgreSQL database from local
+postgres:
+  connection:
+    driver: "postgres"
+    host: "localhost"
+    port: 2345
+    user: "postgres"
+    password: "Gamersking0"
+    dbname: "bookdata"
+
+log:
+  level: "debug"
+  format: "json"

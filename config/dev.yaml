@@ -1,0 +1,19 @@
+app:
+  env: "production"
+  port: 8080
+  host: "localhost"
+
+# The connection details for the PostgreSQL database from docker-image
+postgres:
+  connection:
+    driver: "postgres"
+    host: "localhost"
+    port: 5432
+    user: "postgres"
+    password: "Gamersking0"
+    dbname: "bookdb"
+    sslmode: "disable"
+
+log:
+  level: "debug"
+  format: "json"

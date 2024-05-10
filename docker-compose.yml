@@ -1,21 +1,26 @@
-version: "3.8"
+version: "3.9"
 services:
-  db:
-    container_name: postgres_container
-    image: postgres
-    restart: always
+  book-app:
+    container_name: book-app
+    image: nukie/book-app:1.0
+    build: .
     environment:
-      POSTGRES_USER: nukie
+      DATABASE_URL: "host=book-db user=postgres password=Gamersking0 dbname=bookdb sslmode=disable"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - book-db
+  book-db:
+    container_name: book-db
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Gamersking0
-      POSTGRES_DB: bookstore
+      POSTGRES_DB: bookdb
     ports:
       - "5432:5432"
-  pgadmin:
-    container_name: pgadmin4_container
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
-    ports:
-      - "5050:80"
+    volumes:
+      - book-db-data:/var/lib/postgresql/data
+
+volumes:
+  book-db-data: {}
