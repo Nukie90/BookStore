@@ -1,36 +1,34 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"main/api"
-	"main/data"
-	"main/data/model"
+	"main/infrastructure"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/joho/godotenv"
 
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	envFlag := flag.String("env", "common", "a string")
 
-	db, err := data.DbConnection()
+	flag.Parse()
+
+	configDetail, err := infrastructure.LoadConfig(*envFlag)
 	if err != nil {
 		log.Fatal(err)
 	}
-	
-	db.AutoMigrate(&model.User{})
-	db.AutoMigrate(&model.ShoppingCart{})
 
-	db.AutoMigrate(&model.Book{})
-
-	db.AutoMigrate(&model.SoldRecord{})
+	dbConfig := infrastructure.NewGormConfig(configDetail)
+	db, err := dbConfig.Connection()
+	if err != nil {
+		log.Fatal(err)
+	}
+	dbConfig.AutoMigrate(db)
 
 	app := fiber.New()
 
