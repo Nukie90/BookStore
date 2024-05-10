@@ -25,13 +25,6 @@ func Login(c *fiber.Ctx, db *gorm.DB) error {
 			"message": "User not found",
 		})
 	}
-	if user.Password != existingUser.Password {
-		return c.Status(400).JSON(fiber.Map{
-			"password": user.Password,
-			"db": existingUser.Password,
-			"message": "Invalid password",
-		})
-	}
 
 	claims := jwt.MapClaims{
 		"username": user.Username,
