@@ -3,7 +3,7 @@ package handler
 import (
 	"main/data/entity"
 	"main/internal/users/usecase"
-	"time"
+	_ "net/http"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -50,13 +50,13 @@ func (uh *UserHandler) Login(c *fiber.Ctx) (err error) {
 		})
 	}
 
-	c.Cookie(&fiber.Cookie{
-		Name:     "jwt",
-		Value:    token,
-		Expires:  time.Now().Add(time.Hour * 72),
-	})
-
 	return c.JSON(fiber.Map{
-		"message": "Login successful",
+		"token": token,
+	})
+}
+
+func (uh *UserHandler) Logout(c *fiber.Ctx) (err error) {
+	return c.JSON(fiber.Map{
+		"message": "Successfully logged out",
 	})
 }

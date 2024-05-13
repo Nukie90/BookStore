@@ -36,3 +36,15 @@ func (bh *BookHandler) AddBook(c *fiber.Ctx) (err error) {
 
 	return c.JSON(book)
 }
+
+func (bh *BookHandler) BrowseBook(c *fiber.Ctx) (err error) {
+	how := c.Params("how")
+	books, err := bh.usecase.BrowseBook(how)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.JSON(books)
+}

@@ -26,3 +26,7 @@ func (bu *BookUsecase) AddBook(book *entity.Book) (err error) {
 	book.ID = uuid.New()
 	return bu.repo.AddBook(book)
 }
+
+func (bu *BookUsecase) BrowseBook(request string) (books []entity.Book, err error) {
+	return bu.repo.BrowseBook(request)
+}

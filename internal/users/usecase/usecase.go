@@ -48,7 +48,7 @@ func (uu *UserUsecase) Login(user *entity.User) (string, error) {
 
 	claims := jwt.MapClaims{
 		"user_id": userDetail.ID,
-		"exp": time.Now().Add(time.Hour * 72).Unix(),
+		"exp": time.Now().Add(time.Hour * 2).Unix(),
 		"user_type": userDetail.UserType,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

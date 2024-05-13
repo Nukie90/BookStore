@@ -34,3 +34,19 @@ func (br *BookRepo) GetBookByTitle(title string) (book *entity.Book, found bool)
 	return book, true
 
 }
+
+func (br *BookRepo) BrowseBook(request string) (books []entity.Book, err error) {
+	switch request {
+	case "all":
+		err = br.bookDB.Find(&books).Error
+	case "available":
+		err = br.bookDB.Where("stock > 0").Find(&books).Error
+	case "by_price":
+		err = br.bookDB.Order("price desc").Find(&books).Error
+	case "by_author":
+		err = br.bookDB.Order("author").Find(&books).Error
+	case "by_title":
+		err = br.bookDB.Order("title").Find(&books).Error
+	}
+	return
+}

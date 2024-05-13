@@ -21,15 +21,21 @@ func SetupRoutes(app *fiber.App, db *gorm.DB) {
 
 	app.Post("/login", userHandler.Login)
 	app.Post("/register", userHandler.AddUser)
-
+	app.Get("/logout", userHandler.Logout)
+	app.Get("/browse/:how", bookHandler.BrowseBook)
 	customer := app.Group("/customer")
 	{
-		customer.Use(validating.IsCustomer)
+		customer.Use(validating.JwtAuth(),validating.IsCustomer)
+		customer.Get("/profile", func(c *fiber.Ctx) error {
+			return c.JSON(fiber.Map{
+				"message": "Welcome to your profile",
+			})
+		})
 	}
 
 	owner := app.Group("/owner")
 	{
-		owner.Use(validating.IsOwner)
+		owner.Use(validating.JwtAuth(),validating.IsOwner)
 		owner.Post("/addbook", bookHandler.AddBook)
 	}
 
