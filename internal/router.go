@@ -31,12 +31,22 @@ func SetupRoutes(app *fiber.App, db *gorm.DB) {
 				"message": "Welcome to your profile",
 			})
 		})
+		customer.Post("addtocart", userHandler.AddToCart)
+		customer.Get("/cart", userHandler.GetCart)
+		customer.Post("/remove", userHandler.RemoveFromCart)
+		customer.Get("/checkout", bookHandler.Checkout)
 	}
 
 	owner := app.Group("/owner")
 	{
 		owner.Use(validating.JwtAuth(),validating.IsOwner)
+		owner.Get("/profile", func(c *fiber.Ctx) error {
+			return c.JSON(fiber.Map{
+				"message": "Welcome to your profile",
+			})
+		})
 		owner.Post("/addbook", bookHandler.AddBook)
+		owner.Get("/todayrecords", userHandler.CheckDailySellRecord)
 	}
 
 }

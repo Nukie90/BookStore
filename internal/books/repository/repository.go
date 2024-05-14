@@ -3,6 +3,7 @@ package repository
 import (
 	"main/data/entity"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -32,7 +33,15 @@ func (br *BookRepo) GetBookByTitle(title string) (book *entity.Book, found bool)
 		return nil, false
 	}
 	return book, true
+}
 
+func (br *BookRepo) GetBookByID(id uuid.UUID) (book *entity.Book, found bool) {
+	book = new(entity.Book)
+	err := br.bookDB.Where("id = ?", id).First(book).Error
+	if err != nil {
+		return nil, false
+	}
+	return book, true
 }
 
 func (br *BookRepo) BrowseBook(request string) (books []entity.Book, err error) {
@@ -48,5 +57,30 @@ func (br *BookRepo) BrowseBook(request string) (books []entity.Book, err error) 
 	case "by_title":
 		err = br.bookDB.Order("title").Find(&books).Error
 	}
+	return
+}
+
+func (br *BookRepo) GetUserCart(userID uuid.UUID) (shoppingCart []entity.ShoppingCart, err error) {
+	err = br.bookDB.Where("user_id = ?", userID).Find(&shoppingCart).Error
+	return
+}
+
+func (br *BookRepo) Checkout(book *entity.Book) (err error) {
+	err = br.bookDB.Save(book).Error
+	return
+}
+
+func (br *BookRepo) ClearUserCart(userID uuid.UUID) (err error) {
+	err = br.bookDB.Where("user_id = ?", userID).Delete(&entity.ShoppingCart{}).Error
+	return
+}
+
+func (br *BookRepo) AddSoldRecord(userID uuid.UUID, bookList []entity.Book, cost float64) (err error) {
+	record := new(entity.SoldRecord)
+	record.ID = uuid.New()
+	record.BuyerID = userID
+	record.BookList = bookList
+	record.TotalPrice = cost
+	err = br.bookDB.Create(record).Error
 	return
 }

@@ -5,6 +5,7 @@ import (
 	"main/internal/books/usecase"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type BookHandler struct {
@@ -17,10 +18,6 @@ func NewBookHandler(usecase *usecase.BookUsecase) *BookHandler {
 }
 
 func (bh *BookHandler) AddBook(c *fiber.Ctx) (err error) {
-	if c.Locals("user_type") != "Owner" {
-		return c.SendStatus(403)
-	}
-
 	book := new(entity.Book)
 	if err := c.BodyParser(book); err != nil {
 		return c.Status(400).JSON(fiber.Map{
@@ -47,4 +44,19 @@ func (bh *BookHandler) BrowseBook(c *fiber.Ctx) (err error) {
 	}
 
 	return c.JSON(books)
+}
+
+func (bh *BookHandler) Checkout(c *fiber.Ctx) (err error) {
+	userID := c.Locals("user_id")
+	userID = uuid.MustParse(userID.(string))
+
+	if err := bh.usecase.Checkout(userID.(uuid.UUID)); err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Checkout successful",
+	})
 }

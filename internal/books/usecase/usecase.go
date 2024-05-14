@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"main/data/entity"
 	"main/internal/books/repository"
 
@@ -29,4 +30,47 @@ func (bu *BookUsecase) AddBook(book *entity.Book) (err error) {
 
 func (bu *BookUsecase) BrowseBook(request string) (books []entity.Book, err error) {
 	return bu.repo.BrowseBook(request)
+}
+
+func (bu *BookUsecase) Checkout(userID uuid.UUID) (err error){
+	var shoppingCart []entity.ShoppingCart
+	shoppingCart, err = bu.repo.GetUserCart(userID)
+	if err != nil {
+		return
+	}
+
+	bookList := make([]entity.Book, len(shoppingCart))
+	cost := 0.0
+
+	for i, item := range shoppingCart {
+		book := new(entity.Book)
+		book, found := bu.repo.GetBookByID(item.BookID)
+		if !found {
+			return errors.New("book not found")
+		}
+		book.Stock = book.Stock - item.Quantity
+		if book.Stock < 0 {
+			return errors.New("not enough stock")
+		}
+
+		err = bu.repo.AddExistingBook(book)
+		if err != nil {
+			return err
+		}
+
+		bookList[i] = *book
+		cost += item.Cost
+	}
+	
+	err = bu.repo.AddSoldRecord(userID, bookList, cost)
+	if err != nil {
+		return
+	}
+
+	err = bu.repo.ClearUserCart(userID)
+	if err != nil {
+		return
+	}
+
+	return
 }

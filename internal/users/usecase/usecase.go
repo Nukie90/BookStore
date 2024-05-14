@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"time"
 
+
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
@@ -58,4 +60,59 @@ func (uu *UserUsecase) Login(user *entity.User) (string, error) {
 	}
 
 	return signedToken, nil
+}
+
+func (uu *UserUsecase) AddToCart(shoppingCart *entity.ShoppingCart) (error) {
+	shoppingCart.ID = uuid.New()
+	book, found := uu.userRepo.GetBookByTitle(shoppingCart.Title)
+	if !found {
+		return fmt.Errorf("book not found")
+	}
+	shoppingCart.BookID = book.ID
+
+	if shoppingCart.Quantity > book.Stock {
+		return fmt.Errorf("not enough stock")
+	}
+
+	shoppingCart.Cost = book.Price * float64(shoppingCart.Quantity)
+
+	if err := uu.userRepo.AddToCart(shoppingCart); err != nil {
+		return fmt.Errorf("could not add to cart")
+	}
+
+	return nil
+}
+
+func (uu *UserUsecase) GetCart(userID string) ([]entity.ShoppingCart, error) {
+	parsedUserID, err := uuid.Parse(userID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid user id")
+	}
+
+	shoppingCart, err := uu.userRepo.GetCart(parsedUserID)
+	if err != nil {
+		return nil, fmt.Errorf("could not get cart")
+	}
+
+	return shoppingCart, nil
+}
+
+func (uu *UserUsecase) RemoveFromCart(shoppingCart *entity.ShoppingCart) error {
+	userID := shoppingCart.UserID
+	title := shoppingCart.Title
+
+	if err := uu.userRepo.RemoveFromCart(userID, title); err != nil {
+		return fmt.Errorf("could not remove from cart")
+	}
+
+	return nil
+}
+
+func (uu *UserUsecase) CheckDailySellRecord() ([]entity.SoldRecord, error) {
+	records, err := uu.userRepo.CheckDailySellRecord()
+	if err != nil {
+		return nil, fmt.Errorf("could not check daily sell record")
+	}
+
+	return records, nil
 }
