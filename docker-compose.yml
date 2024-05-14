@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  book-app:
+    container_name: book-app
+    image: nukie/book-app:1.0
+    build: .
+    environment:
+      DATABASE_URL: "host=book-db user=postgres password=Gamersking0 dbname=bookdb sslmode=disable"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - book-db
+  book-db:
+    container_name: book-db
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Gamersking0
+      POSTGRES_DB: bookdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - book-db-data:/var/lib/postgresql/data
+
+volumes:
+  book-db-data: {}
