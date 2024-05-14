@@ -2,7 +2,7 @@ package infrastructure
 
 import (
 	"fmt"
-	"main/data/model"
+	"main/data/entity"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -39,8 +39,8 @@ func (gc *GormConfig) Connection() (*gorm.DB, error) {
 }
 
 func (gc *GormConfig) AutoMigrate(db *gorm.DB) {
-	db.AutoMigrate(&model.User{})
-	db.AutoMigrate(&model.ShoppingCart{})
-	db.AutoMigrate(&model.Book{})
-	db.AutoMigrate(&model.SoldRecord{})
+	db.AutoMigrate(&entity.User{})
+	db.AutoMigrate(&entity.ShoppingCart{})
+	db.AutoMigrate(&entity.Book{})
+	db.AutoMigrate(&entity.SoldRecord{})
 }

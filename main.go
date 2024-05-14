@@ -4,8 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"main/api"
 	"main/infrastructure"
+	"main/internal"
+	"main/internal/validating"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -32,8 +33,8 @@ func main() {
 
 	app := fiber.New()
 
-	api.SetupRoutes(app, db)
-	api.SetupMiddleware(app)
+	internal.SetupRoutes(app, db)
+	validating.SetupMiddleware(app)
 
 	portNum := os.Getenv("PORT")
 	if portNum == "" {
